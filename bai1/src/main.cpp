@@ -76,7 +76,7 @@ int main() {
                 cout << "Nhập tên file dữ liệu (ví dụ: false_data.csv, file này phải nằm trong thư mục 'data'): "; // Updated prompt
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 getline(cin, filename_input);
-                string full_filepath = "./../data/" + filename_input;
+                string full_filepath = "../../data/" + filename_input;
                 cout << "Đang thử mở file tại đường dẫn: " << full_filepath << endl;
                 hasInvalidRows = false; 
                 students.clear();                
