@@ -26,6 +26,7 @@ bool importDataFromFile(const string& filename, vector<Student>& students, bool&
     
     SetConsoleTextAttribute(hConsole, FH_BRIGHT_YELLOW);
     cout << "Đang tải dữ liệu từ file: " << filename << endl << endl;
+
     SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
 
     // lấy đuôi file

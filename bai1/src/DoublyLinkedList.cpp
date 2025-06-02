@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <fmt/core.h>
 #include <fmt/format.h> 
+#include <chrono>
 
 // Constructor
 DoublyLinkedList::DoublyLinkedList() : head(nullptr), tail(nullptr), size(0) {}
@@ -330,7 +331,128 @@ double DoublyLinkedList::sort(SortAlgorithmType algorithm, SortCriterionType cri
     throw std::logic_error("Sort function is not implemented for DoublyLinkedList.");
 }
 
-// Search - Chưa triển khai
-SearchResult DoublyLinkedList::search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName) const {
-    throw std::logic_error("Search function is not implemented for DoublyLinkedList.");
+// lấy phần tử dựa trên criterion 
+string DoublyLinkedList::getFieldByCriterion(const Student &student, SearchCriterionType criterion) const
+{
+    switch (criterion) {
+        case SearchCriterionType::MSSV: return student.mssv;
+        case SearchCriterionType::HO: return student.ho;
+        case SearchCriterionType::TEN: return student.ten;
+        case SearchCriterionType::LOP: return student.lop;
+        case SearchCriterionType::DIEM: return std::to_string(student.diem);
+        default: return "";
+    }
+}
+
+// Search 
+SearchResult DoublyLinkedList::search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName, int searchAlgoChoice) const {
+    using namespace std::chrono;
+    std::vector<Student> resultOfSearch;
+    
+    auto start = high_resolution_clock::now();
+
+    // searchAlgoChoice = 1 -> Tìm kiếm nhị phân
+    // searchAlgoChoice = 2 -> Tìm kiếm vét cạn
+    if (searchAlgoChoice == 1) {
+        // Số lượng tối đa có thể có của danh sách 
+        const int MAX_STUDENTS = 1000;
+        // Đánh dấu cho các nốt bằng thứ tự để kiểm soát truy cập nhanh chóng 
+        Node* node_indexed[MAX_STUDENTS];
+
+        Node* current = head;
+        for (int i = 0; i<size; i++) {
+            node_indexed[i+1] = current;    // 1 -> size
+            current = current->next;
+        }
+
+        for (int i = size+1; i<MAX_STUDENTS; i++) {
+            node_indexed[i] = nullptr;
+        }
+
+        // khai báo cận dưới với cận trên 
+        Node* lo = nullptr;
+        Node* hi = nullptr;
+
+        // tìm cận dưới thỏa [cận dưới, cận trên)
+        int l = 1, r = size;
+        while(l <= r) {
+            int mid = (l + r) >> 1;
+            Node* node_process = node_indexed[mid];
+            const Student& student = node_process -> data;
+            string value = getFieldByCriterion(student, criterion);
+
+           if (toLowerString(value).compare(0, searchTerm.size(), toLowerString(searchTerm)) >= 0) {
+                lo = node_process;
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+
+
+        // tìm cận trên 
+        l = 1, r = size;
+        while(l <= r) {
+            int mid = (l + r) >> 1;
+            Node* node_process = node_indexed[mid];
+            const Student& student = node_process -> data;
+            string value = getFieldByCriterion(student, criterion);
+
+           if (toLowerString(value).compare(0, searchTerm.size(), toLowerString(searchTerm)) > 0) {
+                hi = node_process;
+                r = mid - 1;
+            } else {
+                l = mid + 1;
+            }
+        }
+
+        if (lo != nullptr) {
+            current = lo;
+            while (current != hi && current != nullptr) {
+                const Student& student = current->data;
+                const string value = getFieldByCriterion(student, criterion);
+                if (startsWith(value, searchTerm)) {
+                    resultOfSearch.push_back(student);
+                }
+                current = current -> next;
+            }
+        }
+        
+
+        auto end = high_resolution_clock::now();
+        duration<double, std::milli> elapsed = end - start;
+        SearchResult result = SearchResult(resultOfSearch, elapsed.count());
+        return result;
+        
+    } else {
+        Node* current = head;
+
+        do {
+            const Student& student = current->data;
+            bool isMatched = false;
+
+            switch (criterion) {
+                case SearchCriterionType::DIEM: {
+                    std::string diem = std::to_string(student.diem);
+                    isMatched = containsSubString(diem, searchTerm);
+                    break;
+                }
+                case SearchCriterionType::HO:   isMatched = containsSubString(student.ho, searchTerm); break;
+                case SearchCriterionType::TEN:  isMatched = containsSubString(student.ten, searchTerm); break;
+                case SearchCriterionType::MSSV: isMatched = containsSubString(student.mssv, searchTerm); break;
+                case SearchCriterionType::LOP:  isMatched = containsSubString(student.lop, searchTerm); break;
+            }
+
+            if (isMatched) {
+                resultOfSearch.push_back(student);
+            }
+
+            current = current -> next;
+        } while (current != nullptr);
+
+        auto end = high_resolution_clock::now();
+        duration<double, std::milli> elapsed = end - start;
+        SearchResult result = SearchResult(resultOfSearch, elapsed.count());
+        return result;
+    }
 }

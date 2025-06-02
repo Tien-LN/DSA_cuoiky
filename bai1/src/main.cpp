@@ -34,6 +34,7 @@ int main() {
     bool hasInvalidRows = false;
     bool dataStructureSelected = false;
     string dsName;
+    isSorted dataSorted = isSorted::NONE;
 
     int choice;
 
@@ -69,11 +70,13 @@ int main() {
         switch (choice) {
             case 1: {
                 string filename_input;
+                // Case Input File set Sorted = false 
+                dataSorted = isSorted::NONE;
                 SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
                 cout << "Nhập tên file dữ liệu (ví dụ: false_data.csv, file này phải nằm trong thư mục 'data'): "; // Updated prompt
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 getline(cin, filename_input);
-                string full_filepath = "../../data/" + filename_input;
+                string full_filepath = "./../data/" + filename_input;
                 cout << "Đang thử mở file tại đường dẫn: " << full_filepath << endl;
                 hasInvalidRows = false; 
                 students.clear();                
@@ -181,11 +184,17 @@ int main() {
                 addStudent(*studentList);
                 // Update the vector to keep data in sync
                 students = studentList->getAllStudents();
+
+                // Case Add data set Sorted = false 
+                dataSorted = isSorted::NONE;
                 break;
             case 4:
                 updateStudent(*studentList);
                 // Update the vector to keep data in sync
                 students = studentList->getAllStudents();
+
+                // Case Update data set Sorted = false 
+                dataSorted = isSorted::NONE;
                 break;
             case 5:
                 deleteStudent(*studentList);
@@ -252,12 +261,12 @@ int main() {
                 break;
             }
             case 7:
-                sortStudents(*studentList);
+                sortStudents(*studentList, dataSorted);
                 // Update the vector to keep data in sync (uncomment when sort is implemented)
                 // students = studentList->getAllStudents();
                 break;            
             case 8:
-                searchStudents(*studentList);
+                searchStudents(*studentList, dataSorted, dataStructureType);
                 break;
             case 0:
                 SetConsoleTextAttribute(hConsole, BRIGHT_GREEN_MAIN);

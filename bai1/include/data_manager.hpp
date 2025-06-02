@@ -3,6 +3,7 @@
 
 #include "student.hpp"
 #include "IStudentList.hpp" 
+#include "enums.hpp"
 #include <vector> 
 
 // Các hàm quản lý sinh viên 
@@ -18,9 +19,9 @@ void listHighestScoringStudents(const IStudentList& studentList);
 
 double calculateAverageScore(const IStudentList& studentList);
 
-void sortStudents(IStudentList& studentList);
+void sortStudents(IStudentList& studentList, isSorted& dataSorted);
 
-void searchStudents(IStudentList& studentList);
+void searchStudents(IStudentList& studentList, isSorted dataSorted, DataStructureType dataStructureType);
 
 void displayAllStudents(const IStudentList& studentList);
 

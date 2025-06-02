@@ -90,3 +90,49 @@ bool validateDiem(const string& diemStr, float& diemOut, vector<string>& errorMe
     }
     return isValid;
 }
+
+// Chuyển về chữ thường 
+string toLowerString(const string& s){ 
+    string result = s;
+    for (char& c : result){
+        c = (c >= 'A' && c <= 'Z') ? (char)(c + 32) : c;
+    }
+    return result;
+}
+
+// hàm kiểm tra xâu có chứa nội dung tìm hay không 
+bool containsSubString(const string& text, const string& searchTerms){
+    size_t n = text.size();
+    size_t m = searchTerms.size();
+
+    if (m == 0) return true;
+    if (m > n) return false;
+
+    string c1 = toLowerString(text);
+    string c2 = toLowerString(searchTerms);
+
+    for (size_t i = 0; i<= n - m; i++){
+        bool found = true;
+        for (int j = 0; j < m; j++) {
+            if(c1[i + j] != c2[j]){
+                found = false;
+                break;
+            }
+        }
+        if (found) return true;
+    }
+    return false;
+}
+
+
+// Hàm Kiểm tra có là tiền tố của text không
+bool startsWith(const std::string& text, const std::string& prefix) {
+    if (prefix.size() > text.size()) return false;
+    for (size_t i = 0; i < prefix.size(); ++i) {
+        if (tolower(text[i]) != tolower(prefix[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+

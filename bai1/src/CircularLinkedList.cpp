@@ -7,6 +7,7 @@
 #include <stdexcept>
 #include <fmt/core.h>
 #include <fmt/format.h> 
+#include <chrono>
 
 // Constructor
 CircularLinkedList::CircularLinkedList() : head(nullptr), tail(nullptr), size(0) {}
@@ -363,7 +364,51 @@ double CircularLinkedList::sort(SortAlgorithmType algorithm, SortCriterionType c
     throw std::logic_error("Sort function is not implemented for CircularLinkedList.");
 }
 
-// Search - Chưa triển khai
-SearchResult CircularLinkedList::search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName) const {
-    throw std::logic_error("Search function is not implemented for CircularLinkedList.");
+// Search 
+SearchResult CircularLinkedList::search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName, int searchAlgoChoice) const {
+    if(searchAlgoChoice == 1) {
+        throw std::logic_error("There is not binary search in Circular Linked List");
+    } else {
+        std::vector<Student> resultOfSearch;
+        using namespace std::chrono;
+        auto start = high_resolution_clock::now();
+
+        // There is empty list 
+        if (head == nullptr) {
+            auto end = high_resolution_clock::now();
+            duration<double, std::milli> elapsed = end - start;
+            SearchResult result = SearchResult(resultOfSearch, elapsed.count());
+            return result;
+        }
+
+        Node* current = head;
+
+        do {
+            const Student& student = current->data;
+            bool isMatched = false;
+
+            switch (criterion) {
+                case SearchCriterionType::DIEM: {
+                    std::string diem = std::to_string(student.diem);
+                    isMatched = containsSubString(diem, searchTerm);
+                    break;
+                }
+                case SearchCriterionType::HO:   isMatched = containsSubString(student.ho, searchTerm); break;
+                case SearchCriterionType::TEN:  isMatched = containsSubString(student.ten, searchTerm); break;
+                case SearchCriterionType::MSSV: isMatched = containsSubString(student.mssv, searchTerm); break;
+                case SearchCriterionType::LOP:  isMatched = containsSubString(student.lop, searchTerm); break;
+            }
+
+            if (isMatched) {
+                resultOfSearch.push_back(student);
+            }
+
+            current = current -> next;
+        } while (current != head);
+
+        auto end = high_resolution_clock::now();
+        duration<double, std::milli> elapsed = end - start;
+        SearchResult result = SearchResult(resultOfSearch, elapsed.count());
+        return result;
+    }
 }

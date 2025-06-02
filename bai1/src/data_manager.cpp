@@ -310,7 +310,7 @@ double calculateAverageScore(const IStudentList& studentList) {
     return avgScore;
 }
 
-void sortStudents(IStudentList& studentList) {
+void sortStudents(IStudentList& studentList, isSorted& dataSorted) {
     SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
     std::cout << "\n--- Sắp Xếp Danh Sách Sinh Viên 📏 ---\n\n";
     int algoChoice = 0, criterionChoice = 0;
@@ -419,17 +419,29 @@ void sortStudents(IStudentList& studentList) {
     double timeTaken = studentList.sort(algorithm, criterion);
     SetConsoleTextAttribute(hConsole, BRIGHT_GREEN_MAIN);
     std::cout << "Đã sắp xếp xong.\n";
+
+    switch (criterion)
+    {
+    case SortCriterionType::DIEM : dataSorted = isSorted::DIEM;break;
+    case SortCriterionType::HO : dataSorted = isSorted::HO;break;
+    case SortCriterionType::TEN : dataSorted = isSorted::TEN;break;
+    case SortCriterionType::MSSV : dataSorted = isSorted::MSSV;break;
+    default:
+        break;
+    }
+
     SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
     std::cout << "Thời gian thực hiện: "; 
     SetConsoleTextAttribute(hConsole, BRIGHT_VIOLET_MAIN);
     std::cout << std::fixed << std::setprecision(3) << timeTaken << " ms\n";
     SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
     std::cout << "Danh sách sinh viên sau khi sắp xếp:\n";
+    
     displayAllStudents(studentList);
 }
 
 
-void searchStudents(IStudentList& studentList) {
+void searchStudents(IStudentList& studentList, isSorted dataSorted, DataStructureType dataStructureType) {
     SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
     std::cout << "\n--- Tìm Kiếm Sinh Viên 🔍 ---\n\n";
     int searchAlgoChoice = 0, criterionChoice = 0;
@@ -459,6 +471,30 @@ void searchStudents(IStudentList& studentList) {
             SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
             clearInputBufferDM();
             continue;
+        }
+
+        if (searchAlgoChoice == 1 && dataSorted == isSorted::NONE) {
+            searchAlgoChoice = 0;
+            SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+            std::cout << "\tDanh sách tìm kiếm chưa được sắp xếp hãy sắp xếp lại trước khi tìm kiếm nhị phân.\n";
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+            clearInputBufferDM();
+            continue;
+        }
+
+        // Kiểm tra nếu đang tìm kiếm nhị phân trên danh sách liên kết đơn, vòng không
+        if (searchAlgoChoice == 1) {
+            bool IsNoValid = 
+                (dataStructureType == DataStructureType::CIRCULAR_LINKED_LIST) || 
+                (dataStructureType == DataStructureType::SINGLY_LINKED_LIST);
+            if (IsNoValid) {
+                searchAlgoChoice = 0;
+                SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+                std::cout << "\tDanh sách tìm kiếm không phù hợp.\n";
+                SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+                clearInputBufferDM();
+                continue;
+            }
         }
         
         validAlgoChoice = true;
@@ -496,6 +532,25 @@ void searchStudents(IStudentList& studentList) {
             continue;
         }
         
+        // Nếu là tìm kiếm nhị phân thì kiểm tra xem nó đã sắp xếp theo đúng tiêu chí tìm kiếm chưa
+        if (searchAlgoChoice == 1) {
+            bool isMatched = 
+                (criterionChoice == 1 && dataSorted == isSorted::MSSV) ||
+                (criterionChoice == 2 && dataSorted == isSorted::HO)   ||
+                (criterionChoice == 3 && dataSorted == isSorted::TEN)  ||
+                (criterionChoice == 4 && dataSorted == isSorted::LOP)  ||
+                (criterionChoice == 5 && dataSorted == isSorted::DIEM);
+            
+            if(!isMatched){
+                SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+                std::cout << "Dữ liệu hiện tại không được sắp theo tiêu chí đã chọn. Vui lòng sắp xếp lại hoặc chọn tiêu chí khác.\n";
+                SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+                criterionChoice = 0;
+                clearInputBufferDM();
+                continue; // yêu cầu chọn lại
+            }
+        }
+
         validCriterionChoice = true;
         clearInputBufferDM();
     }
@@ -528,26 +583,6 @@ void searchStudents(IStudentList& studentList) {
         reverseName = true;
     }
     
-    // Nếu chọn tìm kiếm nhị phân, cần kiểm tra danh sách đã được sắp xếp chưa
-    if (searchAlgoChoice == 1) {
-        // Kiểm tra data structure là mảng hoặc DSLK kép không
-        std::vector<Student> students = studentList.getAllStudents();
-        SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
-        std::cout << "Lưu ý: Tìm kiếm nhị phân chỉ hoạt động tốt với dữ liệu đã được sắp xếp theo ";
-        
-        std::string criterionName;
-        switch (criterion) {
-            case SearchCriterionType::MSSV: criterionName = "MSSV"; break;
-            case SearchCriterionType::HO: criterionName = "Họ"; break;
-            case SearchCriterionType::TEN: criterionName = "Tên"; break;
-            case SearchCriterionType::LOP: criterionName = "Lớp"; break;
-            case SearchCriterionType::DIEM: criterionName = "Điểm"; break;
-        }
-        
-        std::cout << criterionName << std::endl;
-        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
-        std::cout << "Nếu dữ liệu chưa được sắp xếp, hãy thực hiện sắp xếp trước khi tìm kiếm nhị phân.\n";
-    }
     
     // Nhập giá trị tìm kiếm
     std::string searchValue;
@@ -561,7 +596,7 @@ void searchStudents(IStudentList& studentList) {
     std::cout << "Đang tìm kiếm..." << std::endl;
     
     // Thực hiện tìm kiếm
-    SearchResult result = studentList.search(criterion, searchValue, reverseName);
+    SearchResult result = studentList.search(criterion, searchValue, reverseName, searchAlgoChoice);
     
     SetConsoleTextAttribute(hConsole, BRIGHT_GREEN_MAIN);
     std::cout << "Tìm kiếm hoàn tất.\n";

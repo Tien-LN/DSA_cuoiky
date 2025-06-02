@@ -3,6 +3,7 @@
 
 #include "IStudentList.hpp"
 #include "student.hpp"
+#include "utils.hpp"
 #include <string>
 #include <stdexcept>
 
@@ -29,7 +30,7 @@ public:
     bool listHighestScoringStudents() const override;
     double calculateAverageScore() const override;
     double sort(SortAlgorithmType algorithm, SortCriterionType criterion) override;
-    SearchResult search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName) const override;
+    SearchResult search(SearchCriterionType criterion, const std::string& searchTerm, bool reverseName,int searchAlgoChoice) const override;
     std::vector<Student> getAllStudents() const override;
     void transferFromVector(const std::vector<Student>& initialStudents) override;
 };

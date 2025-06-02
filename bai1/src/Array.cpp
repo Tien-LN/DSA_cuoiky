@@ -12,6 +12,7 @@
 #include <fmt/format.h>
 #include <chrono>
 
+
 // Constructor
 StudentArray::StudentArray() : currentSize(0) {}
 
@@ -572,8 +573,119 @@ double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criteri
     return elapsed.count(); // trả về thời gian chạy (ms)
 }
 
-// Search
-SearchResult StudentArray::search(SearchCriterionType criterion, const std::string &searchTerm, bool reverseName) const
+string StudentArray::getFieldByCriterion(const Student &student, SearchCriterionType criterion) const
 {
-    throw std::logic_error("Search function is not implemented for StudentArray.");
+    switch (criterion) {
+        case SearchCriterionType::MSSV: return student.mssv;
+        case SearchCriterionType::HO: return student.ho;
+        case SearchCriterionType::TEN: return student.ten;
+        case SearchCriterionType::LOP: return student.lop;
+        case SearchCriterionType::DIEM: return std::to_string(student.diem);
+        default: return "";
+    }
+}
+
+int StudentArray::lowerBoundPrefix(const std::string &prefix, SearchCriterionType criterion) const
+{
+    int left = 0, right = currentSize - 1, result = currentSize;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        std::string value = getFieldByCriterion(students[mid], criterion);
+
+        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) >= 0) {
+            result = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return result;
+}
+
+int StudentArray::upperBoundPrefix(const std::string &prefix, SearchCriterionType criterion) const
+{
+    int left = 0, right = currentSize - 1, result = currentSize;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        std::string value = getFieldByCriterion(students[mid], criterion);
+
+        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) > 0) {
+            result = mid;
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return result;
+}
+
+// Search
+SearchResult StudentArray::search(SearchCriterionType criterion, const std::string &searchTerm, bool reverseName,int searchAlgoChoice) const
+{
+    using namespace std::chrono;
+    auto start = high_resolution_clock::now();
+
+    // Tập kết quả trả về
+    vector<Student> resultOfSearch;
+
+    // searchAlgoChoice = 1 -> Tìm kiếm nhị phân
+    // searchAlgoChoice = 2 -> Tìm kiếm vét cạn
+    if (searchAlgoChoice == 1) {
+        if (criterion == SearchCriterionType::DIEM) {
+            // xử lý tìm điểm 
+        } else {
+            int lo = lowerBoundPrefix(searchTerm, criterion);
+            int hi = upperBoundPrefix(searchTerm, criterion);
+
+            for (int i = lo; i<hi; i++){
+                std::string field = getFieldByCriterion(students[i], criterion);
+                if (startsWith(field, searchTerm)) {
+                    resultOfSearch.push_back(students[i]);
+                }
+            }
+        }
+    } else if (searchAlgoChoice == 2) {
+        for (int i = 0; i < currentSize; i++){
+            const Student& student = students[i];
+
+            switch (criterion) {
+                case SearchCriterionType::DIEM: {
+                    std::string diem = std::to_string(student.diem);
+                    if (containsSubString(diem, searchTerm)) {
+                        resultOfSearch.push_back(student);
+                    }
+                    break;
+                }
+                case SearchCriterionType::HO:
+                    if (containsSubString(student.ho, searchTerm)) {
+                        resultOfSearch.push_back(student);
+                    }
+                    break;
+                case SearchCriterionType::TEN:
+                    if (containsSubString(student.ten, searchTerm)) {
+                        resultOfSearch.push_back(student);
+                    }
+                    break;
+                case SearchCriterionType::MSSV:
+                    if (containsSubString(student.mssv, searchTerm)) {
+                        resultOfSearch.push_back(student);
+                    }
+                    break;
+                case SearchCriterionType::LOP:
+                    if (containsSubString(student.lop, searchTerm)) {
+                        resultOfSearch.push_back(student);
+                    }
+                    break;
+            }
+        }
+    } else {
+        throw std::logic_error("Wrong search Types.");
+    }
+    auto end = high_resolution_clock::now();
+    duration<double, std::milli> elapsed = end - start;
+    SearchResult result = SearchResult(resultOfSearch, elapsed.count());
+    return result;
+    // throw std::logic_error("Search function is not implemented for StudentArray.");
 }

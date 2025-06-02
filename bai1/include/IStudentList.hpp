@@ -26,7 +26,7 @@ public:
 
     virtual double sort(SortAlgorithmType algorithm, SortCriterionType criterion) = 0;
 
-    virtual SearchResult search(SearchCriterionType criterion, const string& searchTerm, bool reverseName) const = 0;
+    virtual SearchResult search(SearchCriterionType criterion, const string& searchTerm, bool reverseName,int searchAlgoChoice) const = 0;
 
     virtual vector<Student> getAllStudents() const = 0;
 

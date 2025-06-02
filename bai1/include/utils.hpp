@@ -18,4 +18,14 @@ bool validateTen(const string& ten, vector<string>& errorMessages);
 bool validateLop(const string& lop, vector<string>& errorMessages);
 bool validateDiem(const string& diemStr, float& diemOut, vector<string>& errorMessages);
 
+// Chuyển về chữ thường 
+string toLowerString(const string& s);
+
+// Kiểm tra Xâu có chứa nội dung cần tìm không 
+bool containsSubString(const string& text, const string& searchTerms);
+
+// Kiểm tra xem prefix có là tiền tố của text không
+bool startsWith(const std::string& text, const std::string& prefix);
+
+
 #endif

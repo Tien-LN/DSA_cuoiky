@@ -37,4 +37,14 @@ enum class DataStructureType {
     CIRCULAR_LINKED_LIST
 };
 
+
+// Check if Sorted 
+enum isSorted {
+    NONE,
+    MSSV,
+    HO,
+    TEN,
+    LOP,
+    DIEM
+};
 #endif 
