@@ -670,10 +670,10 @@ void searchStudents(IStudentList& studentList, isSorted dataSorted, DataStructur
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
             }            
             if (reverseName) {
-                std::string fullName = student.ten + " " + student.ho;
-                std::string reversedName;
-                for (size_t j = fullName.length() - 1; j >= 0; j--) {
-                    reversedName += fullName[j];
+                std::string fullName = student.ho + " " + student.ten;
+                std::string reversedName = "";
+                for (auto characterFullName : fullName) {
+                    reversedName = characterFullName + reversedName;
                 }
                 SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
                 std::cout << " | " << reversedName;
