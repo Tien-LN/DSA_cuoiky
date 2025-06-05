@@ -619,7 +619,7 @@ void searchStudents(IStudentList& studentList, isSorted dataSorted, DataStructur
         SetConsoleTextAttribute(hConsole, BRIGHT_VIOLET_MAIN);
         std::cout << "\n--- Kết Quả Tìm Kiếm 🔍 ---\n\n";
         SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
-        fmt::print("{:<5} {:<15} {:<25} {:<15} {:<15} {:<10}", 
+        fmt::print("{:<5} {:<15} {:<15} {:<15} {:<15} {:<10}", 
                  "STT", "MSSV", "Họ", "Tên", "Lớp", "Điểm");
         
         if (reverseName) {
