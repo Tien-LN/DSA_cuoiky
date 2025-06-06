@@ -641,29 +641,29 @@ void searchStudents(IStudentList& studentList, isSorted dataSorted, DataStructur
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 fmt::print("{:<15} ", student.mssv);
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
-                fmt::print("{:<25} {:<15} {:<15} {:<10.2f}", 
+                fmt::print("{:<15} {:<15} {:<15} {:<10.2f}", 
                          student.ho, student.ten, student.lop, student.diem);
             } else if (criterion == SearchCriterionType::HO) {
                 fmt::print("{:<15} ", student.mssv);
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
-                fmt::print("{:<25} ", student.ho);
+                fmt::print("{:<15} ", student.ho);
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 fmt::print("{:<15} {:<15} {:<10.2f}", 
                          student.ten, student.lop, student.diem);
             } else if (criterion == SearchCriterionType::TEN) {
-                fmt::print("{:<15} {:<25} ", student.mssv, student.ho);
+                fmt::print("{:<15} {:<15} ", student.mssv, student.ho);
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 fmt::print("{:<15} ", student.ten);
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 fmt::print("{:<15} {:<10.2f}", student.lop, student.diem);
             } else if (criterion == SearchCriterionType::LOP) {
-                fmt::print("{:<15} {:<25} {:<15} ", student.mssv, student.ho, student.ten);
+                fmt::print("{:<15} {:<15} {:<15} ", student.mssv, student.ho, student.ten);
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 fmt::print("{:<15} ", student.lop);
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 fmt::print("{:<10.2f}", student.diem);
             } else if (criterion == SearchCriterionType::DIEM) {
-                fmt::print("{:<15} {:<25} {:<15} {:<15} ", 
+                fmt::print("{:<15} {:<15} {:<15} {:<15} ", 
                          student.mssv, student.ho, student.ten, student.lop);
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 fmt::print("{:<10.2f}", student.diem);
