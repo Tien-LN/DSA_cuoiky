@@ -85,7 +85,6 @@ bool StudentArray::update(const std::string &studentId, const Student &updatedSt
             }
             if (tempStudent.diem < 0.0f)
             {
-                // If diem is negative (our special marker), don't update it
                 tempStudent.diem = students[i].diem;
             }
 

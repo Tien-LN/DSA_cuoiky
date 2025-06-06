@@ -25,7 +25,6 @@ int main() {
     SetConsoleOutputCP(CP_UTF8); // Set console output to UTF-8
     SetConsoleCP(CP_UTF8);       // Set console input to UTF-8
 #endif
-    // No need to get console handle here, it's already defined in console_utils
 
     vector<Student> students;
     IStudentList* studentList = nullptr;
@@ -70,10 +69,9 @@ int main() {
         switch (choice) {
             case 1: {
                 string filename_input;
-                // Case Input File set Sorted = false 
                 dataSorted = isSorted::NONE;
                 SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
-                cout << "Nhập tên file dữ liệu (ví dụ: false_data.csv, file này phải nằm trong thư mục 'data'): "; // Updated prompt
+                cout << "Nhập tên file dữ liệu (ví dụ: false_data.csv, file này phải nằm trong thư mục 'data'): "; 
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 getline(cin, filename_input);
                 string full_filepath = "../../data/" + filename_input;
@@ -82,7 +80,6 @@ int main() {
                 students.clear();                
                 if (importDataFromFile(full_filepath, students, hasInvalidRows)) {
                     if (!students.empty()) {
-                        dataLoaded = true;
                         if (dataStructureSelected && studentList != nullptr) {
                             cout << "Đang cập nhật dữ liệu trong cấu trúc " << dsName << "..." << endl;
                             studentList->transferFromVector(students);
@@ -96,6 +93,7 @@ int main() {
                             cout << "Vui lòng sửa các dòng không hợp lệ trong file data rồi import lại hoặc import file data hợp lệ khác để có thể thực hiện các chức năng khác của chương trình!" << endl;
                         } else {
                             cout << "Tất cả dữ liệu đều hợp lệ. Bạn có thể thực hiện các chức năng khác của chương trình!" << endl;
+                        dataLoaded = true;
                         }
                         SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                     } else {
@@ -182,23 +180,16 @@ int main() {
             }
             case 3:
                 addStudent(*studentList);
-                // Update the vector to keep data in sync
                 students = studentList->getAllStudents();
-
-                // Case Add data set Sorted = false 
                 dataSorted = isSorted::NONE;
                 break;
             case 4:
                 updateStudent(*studentList);
-                // Update the vector to keep data in sync
                 students = studentList->getAllStudents();
-
-                // Case Update data set Sorted = false 
                 dataSorted = isSorted::NONE;
                 break;
             case 5:
                 deleteStudent(*studentList);
-                // Update the vector to keep data in sync
                 students = studentList->getAllStudents();
                 break;            
             case 6: {
@@ -262,7 +253,6 @@ int main() {
             }
             case 7:
                 sortStudents(*studentList, dataSorted);
-                // Update the vector to keep data in sync (uncomment when sort is implemented)
                 // students = studentList->getAllStudents();
                 break;            
             case 8:
