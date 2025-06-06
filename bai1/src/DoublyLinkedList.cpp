@@ -569,54 +569,6 @@ double DoublyLinkedList::sort(SortAlgorithmType algorithm, SortCriterionType cri
     }
     else if (algorithm == SortAlgorithmType::HEAP)
     {
-        if (head == nullptr || head->next == nullptr)
-        {
-            return 0.0; // Danh sách rỗng hoặc chỉ có một phần tử
-        }
-
-        // Hàm để heapify
-        std::function<void(Node *, int)> heapify = [&](Node *node, int n)
-        {
-            int largest = 0;
-            Node *left = node->next;
-            Node *right = left ? left->next : nullptr;
-
-            if (left && ((criterion == SortCriterionType::MSSV && left->data.mssv > node->data.mssv) ||
-                         (criterion == SortCriterionType::HO && left->data.ho > node->data.ho) ||
-                         (criterion == SortCriterionType::TEN && left->data.ten > node->data.ten) ||
-                         (criterion == SortCriterionType::DIEM && left->data.diem > node->data.diem)))
-            {
-                largest = 1; // Left is larger
-            }
-            if (right && ((criterion == SortCriterionType::MSSV && right->data.mssv > (largest ? left : node)->data.mssv) ||
-                          (criterion == SortCriterionType::HO && right->data.ho > (largest ? left : node)->data.ho) ||
-                          (criterion == SortCriterionType::TEN && right->data.ten > (largest ? left : node)->data.ten) ||
-                          (criterion == SortCriterionType::DIEM && right->data.diem > (largest ? left : node)->data.diem)))
-            {
-                largest = 2; // Right is larger
-            }
-
-            if (largest != 0)
-            {
-                Node *swapNode = largest == 1 ? left : right;
-                std::swap(node->data, swapNode->data);
-                heapify(swapNode, n);
-            }
-        };
-
-        // Xây dựng max heap
-        for (int i = size / 2 - 1; i >= 0; i--)
-        {
-            heapify(head, size);
-        }
-
-        // Sắp xếp
-        for (int i = size - 1; i >= 0; i--)
-        {
-            std::swap(head->data, tail->data);
-            tail = tail->prev;
-            heapify(head, i);
-        }
     }
     else if (algorithm == SortAlgorithmType::MERGE)
     {
