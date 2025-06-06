@@ -252,7 +252,7 @@ int main() {
                 break;
             }
             case 7:
-                sortStudents(*studentList, dataSorted);
+                sortStudents(*studentList, dataSorted, dataStructureType);
                 // students = studentList->getAllStudents();
                 break;            
             case 8:
