@@ -15,7 +15,8 @@ private:
     int currentSize;
 public:
     StudentArray();
-    ~StudentArray() override = default;    bool add(const Student& student) override;
+    ~StudentArray() override = default;    
+    bool add(const Student& student) override;
     bool update(const std::string& studentId, const Student& updatedStudent) override;
     bool remove(const std::string& studentId) override;
     bool listLowestScoringStudents() const override;

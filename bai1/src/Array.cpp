@@ -731,5 +731,4 @@ SearchResult StudentArray::search(SearchCriterionType criterion, const std::stri
     duration<double, std::milli> elapsed = end - start;
     SearchResult result = SearchResult(resultOfSearch, elapsed.count());
     return result;
-    // throw std::logic_error("Search function is not implemented for StudentArray.");
 }
