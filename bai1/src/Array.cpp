@@ -12,7 +12,6 @@
 #include <fmt/format.h>
 #include <chrono>
 
-
 // Constructor
 StudentArray::StudentArray() : currentSize(0) {}
 
@@ -464,7 +463,8 @@ double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criteri
     }
     else if (algorithm == SortAlgorithmType::HEAP)
     {
-        function<void(int, int)> heapify;
+        int n = currentSize;
+        std::function<void(int, int)> heapify;
         heapify = [&](int n, int i)
         {
             int largest = i;
@@ -505,6 +505,17 @@ double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criteri
                 heapify(n, largest);
             }
         };
+
+        // 1. Xây dựng max-heap
+        for (int i = n / 2 - 1; i >= 0; i--)
+            heapify(n, i);
+
+        // 2. Trích xuất từng phần tử khỏi heap
+        for (int i = n - 1; i > 0; i--)
+        {
+            std::swap(students[0], students[i]); // Đưa phần tử lớn nhất về cuối
+            heapify(i, 0);                       // Gọi lại heapify trên phần còn lại
+        }
     }
     else if (algorithm == SortAlgorithmType::MERGE)
     {
@@ -575,13 +586,20 @@ double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criteri
 
 string StudentArray::getFieldByCriterion(const Student &student, SearchCriterionType criterion) const
 {
-    switch (criterion) {
-        case SearchCriterionType::MSSV: return student.mssv;
-        case SearchCriterionType::HO: return student.ho;
-        case SearchCriterionType::TEN: return student.ten;
-        case SearchCriterionType::LOP: return student.lop;
-        case SearchCriterionType::DIEM: return std::to_string(student.diem);
-        default: return "";
+    switch (criterion)
+    {
+    case SearchCriterionType::MSSV:
+        return student.mssv;
+    case SearchCriterionType::HO:
+        return student.ho;
+    case SearchCriterionType::TEN:
+        return student.ten;
+    case SearchCriterionType::LOP:
+        return student.lop;
+    case SearchCriterionType::DIEM:
+        return std::to_string(student.diem);
+    default:
+        return "";
     }
 }
 
@@ -589,14 +607,18 @@ int StudentArray::lowerBoundPrefix(const std::string &prefix, SearchCriterionTyp
 {
     int left = 0, right = currentSize - 1, result = currentSize;
 
-    while (left <= right) {
+    while (left <= right)
+    {
         int mid = left + (right - left) / 2;
         std::string value = getFieldByCriterion(students[mid], criterion);
 
-        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) >= 0) {
+        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) >= 0)
+        {
             result = mid;
             right = mid - 1;
-        } else {
+        }
+        else
+        {
             left = mid + 1;
         }
     }
@@ -607,14 +629,18 @@ int StudentArray::upperBoundPrefix(const std::string &prefix, SearchCriterionTyp
 {
     int left = 0, right = currentSize - 1, result = currentSize;
 
-    while (left <= right) {
+    while (left <= right)
+    {
         int mid = left + (right - left) / 2;
         std::string value = getFieldByCriterion(students[mid], criterion);
 
-        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) > 0) {
+        if (toLowerString(value).compare(0, prefix.size(), toLowerString(prefix)) > 0)
+        {
             result = mid;
             right = mid - 1;
-        } else {
+        }
+        else
+        {
             left = mid + 1;
         }
     }
@@ -622,7 +648,7 @@ int StudentArray::upperBoundPrefix(const std::string &prefix, SearchCriterionTyp
 }
 
 // Search
-SearchResult StudentArray::search(SearchCriterionType criterion, const std::string &searchTerm, bool reverseName,int searchAlgoChoice) const
+SearchResult StudentArray::search(SearchCriterionType criterion, const std::string &searchTerm, bool reverseName, int searchAlgoChoice) const
 {
     using namespace std::chrono;
     auto start = high_resolution_clock::now();
@@ -632,55 +658,73 @@ SearchResult StudentArray::search(SearchCriterionType criterion, const std::stri
 
     // searchAlgoChoice = 1 -> Tìm kiếm nhị phân
     // searchAlgoChoice = 2 -> Tìm kiếm vét cạn
-    if (searchAlgoChoice == 1) {
-        if (criterion == SearchCriterionType::DIEM) {
-            // xử lý tìm điểm 
-        } else {
+    if (searchAlgoChoice == 1)
+    {
+        if (criterion == SearchCriterionType::DIEM)
+        {
+            // xử lý tìm điểm
+        }
+        else
+        {
             int lo = lowerBoundPrefix(searchTerm, criterion);
             int hi = upperBoundPrefix(searchTerm, criterion);
 
-            for (int i = lo; i<hi; i++){
+            for (int i = lo; i < hi; i++)
+            {
                 std::string field = getFieldByCriterion(students[i], criterion);
-                if (startsWith(field, searchTerm)) {
+                if (startsWith(field, searchTerm))
+                {
                     resultOfSearch.push_back(students[i]);
                 }
             }
         }
-    } else if (searchAlgoChoice == 2) {
-        for (int i = 0; i < currentSize; i++){
-            const Student& student = students[i];
+    }
+    else if (searchAlgoChoice == 2)
+    {
+        for (int i = 0; i < currentSize; i++)
+        {
+            const Student &student = students[i];
 
-            switch (criterion) {
-                case SearchCriterionType::DIEM: {
-                    std::string diem = std::to_string(student.diem);
-                    if (containsSubString(diem, searchTerm)) {
-                        resultOfSearch.push_back(student);
-                    }
-                    break;
+            switch (criterion)
+            {
+            case SearchCriterionType::DIEM:
+            {
+                std::string diem = std::to_string(student.diem);
+                if (containsSubString(diem, searchTerm))
+                {
+                    resultOfSearch.push_back(student);
                 }
-                case SearchCriterionType::HO:
-                    if (containsSubString(student.ho, searchTerm)) {
-                        resultOfSearch.push_back(student);
-                    }
-                    break;
-                case SearchCriterionType::TEN:
-                    if (containsSubString(student.ten, searchTerm)) {
-                        resultOfSearch.push_back(student);
-                    }
-                    break;
-                case SearchCriterionType::MSSV:
-                    if (containsSubString(student.mssv, searchTerm)) {
-                        resultOfSearch.push_back(student);
-                    }
-                    break;
-                case SearchCriterionType::LOP:
-                    if (containsSubString(student.lop, searchTerm)) {
-                        resultOfSearch.push_back(student);
-                    }
-                    break;
+                break;
+            }
+            case SearchCriterionType::HO:
+                if (containsSubString(student.ho, searchTerm))
+                {
+                    resultOfSearch.push_back(student);
+                }
+                break;
+            case SearchCriterionType::TEN:
+                if (containsSubString(student.ten, searchTerm))
+                {
+                    resultOfSearch.push_back(student);
+                }
+                break;
+            case SearchCriterionType::MSSV:
+                if (containsSubString(student.mssv, searchTerm))
+                {
+                    resultOfSearch.push_back(student);
+                }
+                break;
+            case SearchCriterionType::LOP:
+                if (containsSubString(student.lop, searchTerm))
+                {
+                    resultOfSearch.push_back(student);
+                }
+                break;
             }
         }
-    } else {
+    }
+    else
+    {
         throw std::logic_error("Wrong search Types.");
     }
     auto end = high_resolution_clock::now();
