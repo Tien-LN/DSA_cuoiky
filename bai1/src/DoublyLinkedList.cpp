@@ -569,6 +569,74 @@ double DoublyLinkedList::sort(SortAlgorithmType algorithm, SortCriterionType cri
     }
     else if (algorithm == SortAlgorithmType::HEAP)
     {
+        if (head == nullptr || head->next == nullptr)
+            return 0.0;
+
+        // Hàm lấy node theo chỉ số
+        auto getNodeAt = [&](int index) -> Node *
+        {
+            Node *current = head;
+            for (int i = 0; i < index && current; ++i)
+                current = current->next;
+            return current;
+        };
+
+        // Hàm heapify
+        std::function<void(int, int)> heapify = [&](int n, int i)
+        {
+            int largest = i;
+            int left = 2 * i + 1;
+            int right = 2 * i + 2;
+
+            Node *nodeLargest = getNodeAt(largest);
+            Node *nodeLeft = getNodeAt(left);
+            Node *nodeRight = getNodeAt(right);
+
+            switch (criterion)
+            {
+            case SortCriterionType::MSSV:
+                if (left < n && nodeLeft->data.mssv > nodeLargest->data.mssv)
+                    largest = left;
+                if (right < n && nodeRight->data.mssv > getNodeAt(largest)->data.mssv)
+                    largest = right;
+                break;
+            case SortCriterionType::HO:
+                if (left < n && nodeLeft->data.ho > nodeLargest->data.ho)
+                    largest = left;
+                if (right < n && nodeRight->data.ho > getNodeAt(largest)->data.ho)
+                    largest = right;
+                break;
+            case SortCriterionType::TEN:
+                if (left < n && nodeLeft->data.ten > nodeLargest->data.ten)
+                    largest = left;
+                if (right < n && nodeRight->data.ten > getNodeAt(largest)->data.ten)
+                    largest = right;
+                break;
+            case SortCriterionType::DIEM:
+                if (left < n && nodeLeft->data.diem > nodeLargest->data.diem)
+                    largest = left;
+                if (right < n && nodeRight->data.diem > getNodeAt(largest)->data.diem)
+                    largest = right;
+                break;
+            }
+
+            if (largest != i)
+            {
+                std::swap(getNodeAt(i)->data, getNodeAt(largest)->data);
+                heapify(n, largest);
+            }
+        };
+
+        // Xây dựng heap
+        for (int i = size / 2 - 1; i >= 0; --i)
+            heapify(size, i);
+
+        // Trích xuất từng phần tử khỏi heap
+        for (int i = size - 1; i > 0; --i)
+        {
+            std::swap(getNodeAt(0)->data, getNodeAt(i)->data);
+            heapify(i, 0);
+        }
     }
     else if (algorithm == SortAlgorithmType::MERGE)
     {
