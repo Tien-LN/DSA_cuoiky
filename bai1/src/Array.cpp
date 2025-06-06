@@ -660,22 +660,15 @@ SearchResult StudentArray::search(SearchCriterionType criterion, const std::stri
     // searchAlgoChoice = 2 -> Tìm kiếm vét cạn
     if (searchAlgoChoice == 1)
     {
-        if (criterion == SearchCriterionType::DIEM)
-        {
-            // xử lý tìm điểm
-        }
-        else
-        {
-            int lo = lowerBoundPrefix(searchTerm, criterion);
-            int hi = upperBoundPrefix(searchTerm, criterion);
+        int lo = lowerBoundPrefix(searchTerm, criterion);
+        int hi = upperBoundPrefix(searchTerm, criterion);
 
-            for (int i = lo; i < hi; i++)
+        for (int i = lo; i < hi; i++)
+        {
+            std::string field = getFieldByCriterion(students[i], criterion);
+            if (startsWith(field, searchTerm))
             {
-                std::string field = getFieldByCriterion(students[i], criterion);
-                if (startsWith(field, searchTerm))
-                {
-                    resultOfSearch.push_back(students[i]);
-                }
+                resultOfSearch.push_back(students[i]);
             }
         }
     }
