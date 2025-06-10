@@ -7,27 +7,21 @@
 #include "file_handler.hpp"
 #include "student.hpp"
 #include "utils.hpp"
+#include "console_utils.hpp"
 
 #define WIN32_LEAN_AND_MEAN // Add this to reduce the scope of windows.h
 #include <windows.h> // Required for SetConsoleTextAttribute
 
 using namespace std;
 
-const WORD FH_BRIGHT_GREEN = FOREGROUND_GREEN | FOREGROUND_INTENSITY;
-const WORD FH_BRIGHT_RED = FOREGROUND_RED | FOREGROUND_INTENSITY;
-const WORD FH_BRIGHT_YELLOW = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY; 
-const WORD BRIGHT_PURPLE_MAIN = FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY; 
-const WORD FH_DEFAULT_COLOR = FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE; 
-
 bool importDataFromFile(const string& filename, vector<Student>& students, bool& hasInvalidRows) {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE); // Get console handle
 
     students.clear();
     
-    SetConsoleTextAttribute(hConsole, FH_BRIGHT_YELLOW);
+    SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
     cout << "Đang tải dữ liệu từ file: " << filename << endl << endl;
 
-    SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
+    SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
 
     // lấy đuôi file
     string extension;
@@ -38,25 +32,25 @@ bool importDataFromFile(const string& filename, vector<Student>& students, bool&
 
     // chỉ hỗ trợ file csv
     if (extension != ".csv") {
-        SetConsoleTextAttribute(hConsole, FH_BRIGHT_RED);
+        SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
         cout << "Chỉ hỗ trợ file CSV. Vui lòng thử lại." << endl;
-        SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
+        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
         return false;
     } else {
         ifstream file(filename);
         if (!file.is_open()) {
-            SetConsoleTextAttribute(hConsole, FH_BRIGHT_RED);
+            SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
             cout << "Không thể mở file: " << filename << endl;
-            SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
             return false;
         }
 
         string line;
         // Bỏ qua dòng tiêu đề file, kiểm tra xem có đọc được không
         if (!getline(file, line)) {
-            SetConsoleTextAttribute(hConsole, FH_BRIGHT_YELLOW);
+            SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
             cout << "File rỗng hoặc không thể đọc dòng tiêu đề." << endl;
-            SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
             file.close();
             return true; 
         }
@@ -103,13 +97,13 @@ bool importDataFromFile(const string& filename, vector<Student>& students, bool&
                 mssvList.insert(mssv); 
             } else {
                 hasInvalidRows = true;
-                SetConsoleTextAttribute(hConsole, FH_BRIGHT_RED);
+                SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 cout << "Lỗi dòng " << lineNumber << ": \n"; 
-                SetConsoleTextAttribute(hConsole, FH_BRIGHT_YELLOW);
+                SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
                 cout << "\tNội dung dòng: \"" << line << "\"." << endl; 
                 SetConsoleTextAttribute(hConsole, BRIGHT_PURPLE_MAIN);
                 cout << "\tLý do: ";
-                SetConsoleTextAttribute(hConsole, FH_DEFAULT_COLOR);
+                SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
                 for (size_t i = 0; i < errorMessages.size(); ++i) {
                     cout << "\n\t\t";
                     cout << errorMessages[i] << (i == errorMessages.size() - 1 ? "" : "; ");

@@ -23,7 +23,7 @@ DoublyLinkedList::~DoublyLinkedList()
         delete current;
         current = nextNode;
         if (current == head)
-            break; // In case we have a circular reference
+            break; 
     }
     head = nullptr;
     tail = nullptr;
@@ -41,7 +41,7 @@ void DoublyLinkedList::transferFromVector(const std::vector<Student> &initialStu
         delete current;
         current = nextNode;
         if (current == head)
-            break; // In case we have a circular reference
+            break; 
     }
     head = nullptr;
     tail = nullptr;

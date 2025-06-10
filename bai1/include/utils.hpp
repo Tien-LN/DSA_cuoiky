@@ -21,6 +21,12 @@ bool validateDiem(const string& diemStr, float& diemOut, vector<string>& errorMe
 // Chuyển về chữ thường 
 string toLowerString(const string& s);
 
+// Chuyển về chữ hoa
+string toUpperString(const string& s);
+
+// Chuẩn hóa tên (viết hoa chữ cái đầu mỗi từ)
+string capitalizeName(const string& name);
+
 // Kiểm tra Xâu có chứa nội dung cần tìm không 
 bool containsSubString(const string& text, const string& searchTerms);
 

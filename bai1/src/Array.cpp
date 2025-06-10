@@ -49,7 +49,7 @@ bool StudentArray::add(const Student &student)
     {
         if (students[i].mssv == student.mssv)
         {
-            std::cerr << "MSSV đã tồn tại trong danh sách sinh viên.\n";
+            std::cerr << "\nMSSV đã tồn tại trong danh sách sinh viên.\n";
             return false;
         }
     }
@@ -285,7 +285,6 @@ std::vector<Student> StudentArray::getAllStudents() const
 // Sort
 double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criterion)
 {
-    // throw std::logic_error("Sort function is not implemented for StudentArray.");
     using namespace std::chrono;
     auto start = high_resolution_clock::now();
     if (algorithm == SortAlgorithmType::BUBBLE)
@@ -527,7 +526,6 @@ double StudentArray::sort(SortAlgorithmType algorithm, SortCriterionType criteri
                 mergeSort(left, mid);
                 mergeSort(mid + 1, right);
 
-                // Merge the two halves
                 int n1 = mid - left + 1;
                 int n2 = right - mid;
 
@@ -659,22 +657,14 @@ SearchResult StudentArray::search(SearchCriterionType criterion, const std::stri
     // searchAlgoChoice = 2 -> Tìm kiếm vét cạn
     if (searchAlgoChoice == 1)
     {
-        if (criterion == SearchCriterionType::DIEM)
+        int lo = lowerBoundPrefix(searchTerm, criterion);
+        int hi = upperBoundPrefix(searchTerm, criterion);
+        for (int i = lo; i < hi; i++)
         {
-            // xử lý tìm điểm
-        }
-        else
-        {
-            int lo = lowerBoundPrefix(searchTerm, criterion);
-            int hi = upperBoundPrefix(searchTerm, criterion);
-
-            for (int i = lo; i < hi; i++)
+            std::string field = getFieldByCriterion(students[i], criterion);
+            if (startsWith(field, searchTerm))
             {
-                std::string field = getFieldByCriterion(students[i], criterion);
-                if (startsWith(field, searchTerm))
-                {
-                    resultOfSearch.push_back(students[i]);
-                }
+                resultOfSearch.push_back(students[i]);
             }
         }
     }

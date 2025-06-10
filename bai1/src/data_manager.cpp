@@ -33,6 +33,18 @@ std::string toLowerDM(std::string s)
     return s;
 }
 
+// hàm helper để lấy danh sách MSSV hiện tại
+std::set<std::string> getCurrentMSSVList(const IStudentList &studentList)
+{
+    std::set<std::string> mssvSet;
+    std::vector<Student> students = studentList.getAllStudents();
+    for (const auto &student : students)
+    {
+        mssvSet.insert(student.mssv);
+    }
+    return mssvSet;
+}
+
 void displayAllStudents(const IStudentList &studentList)
 {
     std::vector<Student> students = studentList.getAllStudents();
@@ -65,8 +77,8 @@ void addStudent(IStudentList &studentList)
     std::vector<std::string> errorMessages;
     SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
     std::cout << "\n--- Thêm Sinh Viên Mới ➕ ---\n\n";
-    SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
-
+    SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);    
+    
     // MSSV
     do
     {
@@ -74,10 +86,15 @@ void addStudent(IStudentList &studentList)
         std::cout << "\tNhập MSSV: ";
         std::getline(std::cin, newStudent.mssv);
         newStudent.mssv = trim(newStudent.mssv);
-        if (newStudent.mssv.empty())
+        newStudent.mssv = toUpperString(newStudent.mssv); // Chuẩn hóa MSSV thành chữ hoa
+        
+        // Lấy danh sách MSSV hiện tại để kiểm tra trùng lặp
+        std::set<std::string> currentMSSVs = getCurrentMSSVList(studentList);
+        if (!validateMSSV(newStudent.mssv, currentMSSVs, errorMessages))
         {
-            errorMessages.push_back("MSSV không được để trống.");
+            // Validation failed, error messages already added
         }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -95,10 +112,13 @@ void addStudent(IStudentList &studentList)
         std::cout << "\tNhập Họ: ";
         std::getline(std::cin, newStudent.ho);
         newStudent.ho = trim(newStudent.ho);
-        if (newStudent.ho.empty())
+        newStudent.ho = capitalizeName(newStudent.ho); // Chuẩn hóa họ
+        
+        if (!validateHo(newStudent.ho, errorMessages))
         {
-            errorMessages.push_back("Họ không được để trống.");
+            // Validation failed, error messages already added
         }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -116,10 +136,13 @@ void addStudent(IStudentList &studentList)
         std::cout << "\tNhập Tên: ";
         std::getline(std::cin, newStudent.ten);
         newStudent.ten = trim(newStudent.ten);
-        if (newStudent.ten.empty())
+        newStudent.ten = capitalizeName(newStudent.ten); // Chuẩn hóa tên
+        
+        if (!validateTen(newStudent.ten, errorMessages))
         {
-            errorMessages.push_back("Tên không được để trống.");
+            // Validation failed, error messages already added
         }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -137,10 +160,13 @@ void addStudent(IStudentList &studentList)
         std::cout << "\tNhập Lớp: ";
         std::getline(std::cin, newStudent.lop);
         newStudent.lop = trim(newStudent.lop);
-        if (newStudent.lop.empty())
+        newStudent.lop = toUpperString(newStudent.lop); // Chuẩn hóa lớp thành chữ hoa
+        
+        if (!validateLop(newStudent.lop, errorMessages))
         {
-            errorMessages.push_back("Lớp không được để trống.");
+            // Validation failed, error messages already added
         }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -206,10 +232,22 @@ void updateStudent(IStudentList &studentList)
         SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
         std::getline(std::cin, studentIdToUpdate);
         studentIdToUpdate = trim(studentIdToUpdate);
+        studentIdToUpdate = toUpperString(studentIdToUpdate); // Chuẩn hóa MSSV
+        
         if (studentIdToUpdate.empty())
         {
             errorMessages.push_back("MSSV không được để trống.");
         }
+        else
+        {
+            // Kiểm tra xem MSSV có tồn tại trong danh sách không
+            std::set<std::string> currentMSSVs = getCurrentMSSVList(studentList);
+            if (currentMSSVs.find(studentIdToUpdate) == currentMSSVs.end())
+            {
+                errorMessages.push_back("MSSV \"" + studentIdToUpdate + "\" không tồn tại trong danh sách sinh viên.");
+            }
+        }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -226,47 +264,125 @@ void updateStudent(IStudentList &studentList)
     SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
     std::cout << "Nhập thông tin mới, bỏ trống những trường không muốn cập nhật.\n";
     SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+    
+    // MSSV mới với validation
     std::cout << "\tMSSV mới: ";
     std::getline(std::cin, studentWithUpdates.mssv);
     studentWithUpdates.mssv = trim(studentWithUpdates.mssv);
-    std::cout << "\tHọ mới: ";
+    if (!studentWithUpdates.mssv.empty())
+    {
+        studentWithUpdates.mssv = toUpperString(studentWithUpdates.mssv); // Chuẩn hóa
+        
+        // Validate MSSV mới nếu có thay đổi
+        if (studentWithUpdates.mssv != studentIdToUpdate)
+        {
+            std::set<std::string> currentMSSVs = getCurrentMSSVList(studentList);
+            std::vector<std::string> mssvErrors;
+            if (!validateMSSV(studentWithUpdates.mssv, currentMSSVs, mssvErrors))
+            {
+                SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+                std::cout << "\t  Lỗi MSSV mới: ";
+                SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+                for (const auto &msg : mssvErrors)
+                {
+                    std::cout << msg << " ";
+                }
+                std::cout << "\n";
+                SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+                studentWithUpdates.mssv = ""; // Reset invalid MSSV
+            }
+        }
+    }
+      std::cout << "\tHọ mới: ";
     std::getline(std::cin, studentWithUpdates.ho);
     studentWithUpdates.ho = trim(studentWithUpdates.ho);
+    if (!studentWithUpdates.ho.empty())
+    {
+        studentWithUpdates.ho = capitalizeName(studentWithUpdates.ho); // Chuẩn hóa họ
+        
+        // Validate họ mới
+        std::vector<std::string> hoErrors;
+        if (!validateHo(studentWithUpdates.ho, hoErrors))
+        {
+            SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+            std::cout << "\t  Lỗi Họ mới: ";
+            SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+            for (const auto &msg : hoErrors)
+            {
+                std::cout << msg << " ";
+            }
+            std::cout << "\n";
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+            studentWithUpdates.ho = ""; // Reset invalid họ
+        }
+    }
+    
     std::cout << "\tTên mới: ";
     std::getline(std::cin, studentWithUpdates.ten);
     studentWithUpdates.ten = trim(studentWithUpdates.ten);
+    if (!studentWithUpdates.ten.empty())
+    {
+        studentWithUpdates.ten = capitalizeName(studentWithUpdates.ten); // Chuẩn hóa tên
+        
+        // Validate tên mới
+        std::vector<std::string> tenErrors;
+        if (!validateTen(studentWithUpdates.ten, tenErrors))
+        {
+            SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+            std::cout << "\t  Lỗi Tên mới: ";
+            SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+            for (const auto &msg : tenErrors)
+            {
+                std::cout << msg << " ";
+            }
+            std::cout << "\n";
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+            studentWithUpdates.ten = ""; // Reset invalid tên
+        }
+    }
+    
     std::cout << "\tLớp mới: ";
     std::getline(std::cin, studentWithUpdates.lop);
     studentWithUpdates.lop = trim(studentWithUpdates.lop);
-    std::cout << "\tĐiểm mới (0.0 - 10.0): ";
+    if (!studentWithUpdates.lop.empty())
+    {
+        studentWithUpdates.lop = toUpperString(studentWithUpdates.lop); // Chuẩn hóa lớp
+        
+        // Validate lớp mới
+        std::vector<std::string> lopErrors;
+        if (!validateLop(studentWithUpdates.lop, lopErrors))
+        {
+            SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
+            std::cout << "\t  Lỗi Lớp mới: ";
+            SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+            for (const auto &msg : lopErrors)
+            {
+                std::cout << msg << " ";
+            }
+            std::cout << "\n";
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+            studentWithUpdates.lop = ""; 
+        }
+    }    std::cout << "\tĐiểm mới (0.0 - 10.0): ";
     std::getline(std::cin, tempInput);
     tempInput = trim(tempInput);
     if (!tempInput.empty())
     {
-        std::stringstream ss(tempInput);
+        std::vector<std::string> diemErrors;
         float diemMoi;
-        ss >> diemMoi;
-
-        while (ss.fail() || !ss.eof() || diemMoi < 0.0f || diemMoi > 10.0f)
+        if (!validateDiem(tempInput, diemMoi, diemErrors))
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
-            std::cout << "\t   Lỗi:";
-            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
-            cout << "điểm không hợp lệ. Vui lòng nhập lại (0.0 - 10.0), hoặc để trống nếu không cập nhật: ";
-            std::getline(std::cin, tempInput);
-            tempInput = trim(tempInput);
-
-            if (tempInput.empty())
+            std::cout << "\t  Lỗi Điểm mới: ";
+            SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+            for (const auto &msg : diemErrors)
             {
-                break;
+                std::cout << msg << " ";
             }
-
-            ss.clear();
-            ss.str(tempInput);
-            ss >> diemMoi;
+            std::cout << "\n";
+            SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
         }
-
-        if (!tempInput.empty())
+        else
         {
             studentWithUpdates.diem = diemMoi;
         }
@@ -295,19 +411,30 @@ void deleteStudent(IStudentList &studentList)
     std::cout << "\nDanh sách sinh viên hiện tại:\n";
     displayAllStudents(studentList);
     SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
-    std::cout << "\n--- Xóa Sinh Viên 🗑️ ---\n\n";
-    do
+    std::cout << "\n--- Xóa Sinh Viên 🗑️ ---\n\n";    do
     {
         errorMessages.clear();
         SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
-        std::cout << "Nhập MSSV của sinh viên cần cập nhật: ";
+        std::cout << "Nhập MSSV của sinh viên cần xóa: ";
         SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
         std::getline(std::cin, studentIdToDelete);
         studentIdToDelete = trim(studentIdToDelete);
+        studentIdToDelete = toUpperString(studentIdToDelete); // Chuẩn hóa MSSV thành chữ hoa
+        
         if (studentIdToDelete.empty())
         {
             errorMessages.push_back("MSSV không được để trống.");
         }
+        else
+        {
+            // Kiểm tra xem MSSV có tồn tại trong danh sách không
+            std::set<std::string> currentMSSVs = getCurrentMSSVList(studentList);
+            if (currentMSSVs.find(studentIdToDelete) == currentMSSVs.end())
+            {
+                errorMessages.push_back("MSSV \"" + studentIdToDelete + "\" không tồn tại trong danh sách sinh viên.");
+            }
+        }
+        
         for (const auto &msg : errorMessages)
         {
             SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
@@ -336,19 +463,105 @@ void deleteStudent(IStudentList &studentList)
     }
 }
 
-void listLowestScoringStudents(const IStudentList &studentList)
+void listLowestScoringStudents(const IStudentList &studentList, bool diemSorted)
 {
-    if (!studentList.listLowestScoringStudents())
-    {
-        std::cout << "\tKhông có sinh viên hoặc không thể liệt kê sinh viên có điểm thấp nhất.\n";
+    if(diemSorted) {
+        std::vector<Student> list = studentList.getAllStudents();
+        
+        // Kiểm tra danh sách có rỗng không
+        if (list.empty()) {
+            std::cout << "\tDanh sách sinh viên rỗng.\n";
+            return;
+        }
+        
+        std::vector<Student> lowestScoringStudents;
+
+        // Nếu danh sách đã sắp xếp tăng dần theo điểm, sinh viên đầu tiên có điểm thấp nhất
+        float lowestScore = list[0].diem; 
+
+        for (const auto &student : list) {
+            if (student.diem == lowestScore) {
+                lowestScoringStudents.push_back(student);
+            } else {
+                // Khi gặp sinh viên có điểm khác (cao hơn), dừng lại
+                break;
+            }
+        }
+        
+        std::cout << "Điểm thấp nhất: ";
+        SetConsoleTextAttribute(hConsole, BRIGHT_VIOLET_MAIN);
+        std::cout << lowestScore << "\n";
+        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+        std::cout << "Danh sách sinh viên có điểm thấp nhất:\n\n";
+        SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+        fmt::print("{:<5} {:<15} {:<25} {:<15} {:<15} {:<10}\n",
+                "STT", "MSSV", "Họ", "Tên", "Lớp", "Điểm");
+        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+        std::cout << std::string(85, '-') << std::endl;
+        for (size_t i = 0; i < lowestScoringStudents.size(); ++i) {
+            const Student &student = lowestScoringStudents[i];
+            fmt::print("{:<5} {:<15} {:<25} {:<15} {:<15} {:<10.2f}\n",
+                    i + 1, student.mssv, student.ho, student.ten, student.lop, student.diem);
+        }
+    }
+    else {
+        // Chỉ gọi interface method khi không dùng sorted list
+        if (!studentList.listLowestScoringStudents())
+        {
+            std::cout << "\tKhông có sinh viên hoặc không thể liệt kê sinh viên có điểm thấp nhất.\n";
+        }
     }
 }
 
-void listHighestScoringStudents(const IStudentList &studentList)
+void listHighestScoringStudents(const IStudentList &studentList, bool diemSorted)
 {
-    if (!studentList.listHighestScoringStudents())
-    {
-        std::cout << "\tKhông có sinh viên hoặc không thể liệt kê sinh viên có điểm cao nhất.\n";
+    if(diemSorted) {
+        std::vector<Student> list = studentList.getAllStudents();
+        
+        // Kiểm tra danh sách có rỗng không
+        if (list.empty()) {
+            std::cout << "\tDanh sách sinh viên rỗng.\n";
+            return;
+        }
+        
+        std::vector<Student> highestScoringStudents;
+        
+        // Nếu danh sách đã sắp xếp tăng dần theo điểm, sinh viên cuối cùng có điểm cao nhất
+        float highestScore = list.back().diem;
+
+        for (int i = list.size() - 1; i >= 0; --i) {
+            if (list[i].diem == highestScore) {
+                highestScoringStudents.push_back(list[i]);
+            } else {
+                // Khi gặp sinh viên có điểm khác (thấp hơn), dừng lại
+                break;
+            }
+        }
+        // Đảo ngược vector để sinh viên được in theo thứ tự xuất hiện trong danh sách gốc
+        std::reverse(highestScoringStudents.begin(), highestScoringStudents.end());
+        
+        std::cout << "Điểm cao nhất: ";
+        SetConsoleTextAttribute(hConsole, BRIGHT_VIOLET_MAIN);
+        std::cout << highestScore << "\n";
+        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+        std::cout << "Danh sách sinh viên có điểm cao nhất:\n\n";
+        SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
+        fmt::print("{:<5} {:<15} {:<25} {:<15} {:<15} {:<10}\n",
+                "STT", "MSSV", "Họ", "Tên", "Lớp", "Điểm");
+        SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
+        std::cout << std::string(85, '-') << std::endl;
+        for (size_t i = 0; i < highestScoringStudents.size(); ++i) {
+            const Student &student = highestScoringStudents[i];
+            fmt::print("{:<5} {:<15} {:<25} {:<15} {:<15} {:<10.2f}\n",
+                    i + 1, student.mssv, student.ho, student.ten, student.lop, student.diem);
+        }
+    }
+    else {
+        // Chỉ gọi interface method khi không dùng sorted list
+        if (!studentList.listHighestScoringStudents())
+        {
+            std::cout << "\tKhông có sinh viên hoặc không thể liệt kê sinh viên có điểm cao nhất.\n";
+        }
     }
 }
 
@@ -733,7 +946,6 @@ void searchStudents(IStudentList &studentList, isSorted dataSorted, DataStructur
     }
     else
     {
-        // Display results with highlighted search term
         SetConsoleTextAttribute(hConsole, BRIGHT_VIOLET_MAIN);
         std::cout << "\n--- Kết Quả Tìm Kiếm 🔍 ---\n\n";
         SetConsoleTextAttribute(hConsole, BRIGHT_YELLOW);
@@ -797,22 +1009,16 @@ void searchStudents(IStudentList &studentList, isSorted dataSorted, DataStructur
                 SetConsoleTextAttribute(hConsole, BRIGHT_RED_MAIN);
                 fmt::print("{:<10.2f}", student.diem);
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
-            }
-            if (reverseName)
+            }            if (reverseName)
             {
                 std::string fullName = student.ho + " " + student.ten;
-                std::string reversedName = "";
-                for (auto characterFullName : fullName)
-                {
-                    reversedName = characterFullName + reversedName;
-                }
+                std::string reversedName = student.reversedName();
                 SetConsoleTextAttribute(hConsole, BRIGHT_BLUE_MAIN);
                 std::cout << " | " << reversedName;
                 SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);
             }
 
             std::cout << std::endl;
-        }
-        std::cout << std::string(85 + (reverseName ? 25 : 0), '-') << std::endl;
+        }        std::cout << std::string(85 + (reverseName ? 25 : 0), '-') << std::endl;
     }
 }

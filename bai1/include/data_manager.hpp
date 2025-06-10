@@ -13,9 +13,9 @@ void updateStudent(IStudentList &studentList);
 
 void deleteStudent(IStudentList &studentList);
 
-void listLowestScoringStudents(const IStudentList &studentList);
+void listLowestScoringStudents(const IStudentList &studentList, bool diemSorted);
 
-void listHighestScoringStudents(const IStudentList &studentList);
+void listHighestScoringStudents(const IStudentList &studentList, bool diemSorted);
 
 double calculateAverageScore(const IStudentList &studentList);
 

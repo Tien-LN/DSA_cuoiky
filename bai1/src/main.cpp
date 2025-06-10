@@ -225,12 +225,12 @@ int main() {
                         case 1:
                             cout << "\nLiệt kê các sinh viên có điểm thấp nhất:\n\n";
                             SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN); 
-                            listLowestScoringStudents(*studentList);
+                            listLowestScoringStudents(*studentList, dataSorted == isSorted::DIEM);
                             break;
                         case 2:
                             cout << "\nLiệt kê các sinh viên có điểm cao nhất:\n\n"; 
                             SetConsoleTextAttribute(hConsole, DEFAULT_COLOR_MAIN);                        
-                            listHighestScoringStudents(*studentList);
+                            listHighestScoringStudents(*studentList, dataSorted == isSorted::DIEM);
                             break;
                         case 3:
                             cout << "\nTính điểm trung bình của mỗi lớp:\n\n";

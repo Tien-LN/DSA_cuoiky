@@ -422,8 +422,6 @@ std::vector<Student> CircularLinkedList::getAllStudents() const
 // Sort - Chưa triển khai
 double CircularLinkedList::sort(SortAlgorithmType algorithm, SortCriterionType criterion)
 {
-    // throw std::logic_error("Sort function is not implemented for CircularLinkedList.");
-
     auto start = std::chrono::high_resolution_clock::now();
     if (algorithm == SortAlgorithmType::BUBBLE)
     {
@@ -640,7 +638,6 @@ SearchResult CircularLinkedList::search(SearchCriterionType criterion, const std
         using namespace std::chrono;
         auto start = high_resolution_clock::now();
 
-        // There is empty list 
         if (head == nullptr) {
             auto end = high_resolution_clock::now();
             duration<double, std::milli> elapsed = end - start;

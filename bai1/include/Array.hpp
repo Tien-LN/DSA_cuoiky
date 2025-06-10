@@ -7,7 +7,7 @@
 #include <string>
 #include <stdexcept>
 
-const int MAX_STUDENTS = 100; 
+const int MAX_STUDENTS = 1000; 
 
 class StudentArray : public IStudentList {
 private:

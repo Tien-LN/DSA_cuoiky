@@ -1,6 +1,4 @@
 #include "console_utils.hpp"
-
-// No need for byte overrides since we've disabled std::byte completely with _HAS_STD_BYTE=0
 #ifdef _WIN32
 #include <windows.h>
 #endif
